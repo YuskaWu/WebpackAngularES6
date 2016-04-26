@@ -1,35 +1,49 @@
+var path = require('path');
 var webpack = require('webpack');
 var ExtractTextPlugin = require("extract-text-webpack-plugin");
 var HtmlWebpackPlugin = require('html-webpack-plugin');
 var CopyWebpackPlugin = require('copy-webpack-plugin');
 
-
 // plugins =====================================================================================
 
 var extractCSS = new ExtractTextPlugin('stylesheets/[name].bundle.css');
 
+// plugin to apply or generate html template.
 var indexTemplate = new HtmlWebpackPlugin({
   template: './src/index.html',
   filename: 'index.html',
   inject: 'body'
 });
 
-var copyModuleTemplate = new CopyWebpackPlugin([{
-  context: 'src',
-  from: '**/*.html',
-}]);
+// copy specific files to build path
+// ex: Use this plugin to copy html files so that we can reference them by 'templateUrl' in custom directive.
+var copyModuleTemplate = new CopyWebpackPlugin([
+  {
+    context: 'src',
+    from: '**/*.html',
+  }
+]);
 
 
-var commonChunk = new webpack.optimize.CommonsChunkPlugin( 
-  "vendor", //chunkName
-  "vendor.bundle.js" //filename
-);
+// Automatically move all modules defined outside of application directory to vendor bundle.
+// If you are using more complicated project structure, consider to specify common chunks manually.
+var commonChunk = new webpack.optimize.CommonsChunkPlugin( {
+  name: 'vendor',
+  minChunks: function (module, count) {
+    return module.resource && module.resource.indexOf(path.resolve(__dirname, 'src')) === -1;
+  }
+});
 
 // config =======================================================================================
 
 module.exports = {
   entry: {
     app: './src/app.js',
+    // Specify which vendor module should be bundled together.
+    // All thease modules will be bundled together automatically whatever they has been imported in your app or not.
+    // So, in this way you don't need to import thease modules in your app anymore if you 
+    // don't need to use imported object. 
+    // ex: In line-chart.module.js, we can just inject 'gridshore.c3js.chart' module without importing c3-angular.
     vendor: [
       'angular',
       'angular-ui-router',
@@ -54,10 +68,6 @@ module.exports = {
     filename: '[name].bundle.[hash].js',
   },
   
-  // Tool to enhance debugging. You can find the all tools in official doc:
-  // https://webpack.github.io/docs/configuration.html#devtool
-  devtool: 'source-map',
-
   module: {
     preLoaders: [],
     
@@ -89,6 +99,14 @@ module.exports = {
           'style', // backup loader when not building .css file
           'css?sourceMap' // loaders to preprocess CSS
         )
+      },
+      {
+        // HTML LOADER
+        // Reference: https://github.com/webpack/raw-loader
+        // Allow loading html through js
+        // ex: In line-chart.directive.js, use 'require' to load html template.
+        test: /\.html$/,
+        loader: 'raw'
       }
     ]
   },

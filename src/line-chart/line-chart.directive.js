@@ -1,6 +1,6 @@
 class  LineChartController {
   constructor($scope, $filter){
-    
+
   }
 }
 LineChartController.$inject = ['$scope', '$filter'];
@@ -8,7 +8,8 @@ LineChartController.$inject = ['$scope', '$filter'];
 function lineChart () {
   return {
     restrict : "E",
-    templateUrl : "line-chart/line-chart.html",
+//    templateUrl : "line-chart/line-chart.html",
+    template: require('./line-chart.html'),
     controller: LineChartController,
     controllerAs: 'vm',
     scope: {}

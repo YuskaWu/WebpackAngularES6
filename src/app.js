@@ -1,6 +1,3 @@
-import 'angular-material/angular-material.css';
-
-
 import angularMaterial from 'angular-material';
 import uirouter from 'angular-ui-router';
 import config from './app.config';
