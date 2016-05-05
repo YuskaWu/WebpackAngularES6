@@ -1,0 +1,22 @@
+<md-content ng-controller="CardGalleryController as cardGallery" layout="row" layout-wrap>
+    <md-card ng-repeat="img in cardGallery.imgs" flex-gt-xs="35">
+      
+      <md-card-title>
+        <md-card-title-text>
+          <span id="card-header" class="md-headline">{{img.title}}</span>
+        </md-card-title-text>
+      </md-card-title>
+      
+      <md-card-title-media>
+        <img ng-src="{{img.url}}" class="md-card-image">
+      </md-card-title-media>
+      
+      <md-card-actions  layout="row" layout-align="start center">
+        <md-button class="md-accent md-raised" ng-click="cardGallery.like(img)">Like!</md-button>
+      </md-card-actions>
+
+      <md-card-content>
+        <p>LIKE:{{img.likeCount}}</p>
+      </md-card-content>
+    </md-card>
+</md-content>

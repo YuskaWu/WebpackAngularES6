@@ -6,6 +6,11 @@ var CopyWebpackPlugin = require('copy-webpack-plugin');
 
 // plugins =====================================================================================
 
+// Plugin for extracting text into separate output file.
+// Here we use it to extract css content into '[name].bundle.css' file.
+// In order to do that, you also need to tell webpack what kind of text should be extracted, 
+// something like this: ExtractTextPlugin.extract(.....)
+// for more detail see the 'loaders' configs below.
 var extractCSS = new ExtractTextPlugin('stylesheets/[name].bundle.css');
 
 // plugin to apply or generate html template.
@@ -17,7 +22,7 @@ var indexTemplate = new HtmlWebpackPlugin({
 
 // copy specific files to build path
 // ex: Use this plugin to copy html files so that we can reference them by 'templateUrl' in custom directive.
-var copyModuleTemplate = new CopyWebpackPlugin([
+var copyFiles = new CopyWebpackPlugin([
   {
     context: 'src',
     from: '**/*.html',
@@ -49,9 +54,9 @@ module.exports = {
       'angular-ui-router',
       'angular-material',
       'angular-material/angular-material.css',
-      'c3-angular',
-      //'c3',
-      'd3'
+      'd3',
+      'c3',
+      'c3-angular'
     ]
   },
 
@@ -79,7 +84,7 @@ module.exports = {
         // Compiles ES6 and ES7 into ES5 code
         test: /\.js$/,
         loader: 'babel',
-        exclude: /node_modules/,
+        exclude: /(node_modules)/,
         query: {
           presets: ['es2015']
         }
@@ -111,14 +116,23 @@ module.exports = {
     ]
   },
 
+  // options for webpack-dev-server
+  // doc: https://webpack.github.io/docs/webpack-dev-server.html#webpack-dev-server-cli
   devServer: {
+    hot: true,
+    colors: true,
     outputPath: './build'
   },
 
+  // apply plugins
   plugins: [
     indexTemplate,
     extractCSS,
-    copyModuleTemplate,
+    copyFiles,
     commonChunk
-  ]
+  ],
+  
+  resolve: {
+    modulesDirectories: ["node_modules"]
+  }
 };
